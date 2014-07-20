@@ -1,0 +1,113 @@
+Dump of assembler code for function phase_3:
+   0x0000000000400ef9 <+0>:     sub    $0x18,%rsp				; rsp = rsp - 24
+   0x0000000000400efd <+4>:     lea    0x8(%rsp),%rcx			; rcx = *(rsp +  8)
+   0x0000000000400f02 <+9>:     lea    0xc(%rsp),%rdx			; rdx = *(rsp + 12)
+   0x0000000000400f07 <+14>:    mov    $0x401ebe,%esi			; esi = "%d %d"
+   0x0000000000400f0c <+19>:    mov    $0x0,%eax				; eax = 0
+   0x0000000000400f11 <+24>:    callq  0x400ab0 <__isoc99_sscanf@plt>
+   0x0000000000400f16 <+29>:    cmp    $0x1,%eax				; if (eax > 1) goto 0x400f20
+   0x0000000000400f19 <+32>:    jg     0x400f20 <phase_3+39>
+   0x0000000000400f1b <+34>:    callq  0x40163d <explode_bomb>	; else explode_bomb()
+   0x0000000000400f20 <+39>:    cmpl   $0x7,0xc(%rsp)			; if (*(rsp + 12) > 0x7) explode_bomb()
+   0x0000000000400f25 <+44>:    ja     0x400f63 <phase_3+106>
+   0x0000000000400f27 <+46>:    mov    0xc(%rsp),%eax			; eax = *(rsp + 12)
+   0x0000000000400f2b <+50>:    jmpq   *0x401b60(,%rax,8)		; goto (0x401b60 + 8 * rax)
+   0x0000000000400f32 <+57>:    mov    $0x217,%eax				; eax = 535
+   0x0000000000400f37 <+62>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f39 <+64>:    mov    $0xd6,%eax				; eax = 214
+   0x0000000000400f3e <+69>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f40 <+71>:    mov    $0x153,%eax				; eax = 339
+   0x0000000000400f45 <+76>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f47 <+78>:    mov    $0x77,%eax				; eax = 119
+   0x0000000000400f4c <+83>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f4e <+85>:    mov    $0x160,%eax				; eax = 352
+   0x0000000000400f53 <+90>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f55 <+92>:    mov    $0x397,%eax				; eax = 919
+   0x0000000000400f5a <+97>:    jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f5c <+99>:    mov    $0x19c,%eax				; eax = 412
+   0x0000000000400f61 <+104>:   jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f63 <+106>:   callq  0x40163d <explode_bomb>	; explode_bomb()
+   0x0000000000400f68 <+111>:   mov    $0x0,%eax				; eax = 0
+   0x0000000000400f6d <+116>:   jmp    0x400f74 <phase_3+123>	; goto 0x400f74
+   0x0000000000400f6f <+118>:   mov    $0x39e,%eax				; eax = 926
+   0x0000000000400f74 <+123>:   cmp    0x8(%rsp),%eax			; if (eax == *(rsp + 8)) goto 0x400f7f
+   0x0000000000400f78 <+127>:   je     0x400f7f <phase_3+134>
+   0x0000000000400f7a <+129>:   callq  0x40163d <explode_bomb>	; explode_bomb()
+   0x0000000000400f7f <+134>:   add    $0x18,%rsp				; rsp = rsp + 24
+   0x0000000000400f83 <+138>:   retq							; return
+End of assembler dump.
+
+---------------------------------------------------------------------------------------------------------------------
+
+void explode_bomb()
+{
+	printf("Bomb Exploded!\n");
+	exit (EXIT_FAILURE);
+}
+
+int phase_3()
+{
+	char *cString = NULL;
+	size_t len = 0;
+
+	int option; 	/** option: 0..7 **/
+	int corrAns;	/** corresponding answer for specified option **/
+
+	getline(&cString, &len, stdin);
+	
+	/** parse string **/
+	sscanf(cString, "%d %d", &option, &corrAns);
+
+	switch (option) {
+
+		case 0:
+			if (corrAns != 535)
+				explode_bomb();
+			break;
+
+		case 1:
+			if (corrAns != 926)
+				explode_bomb();
+			break;
+
+		case 2:
+			if (corrAns != 214)
+				explode_bomb();
+			break;
+
+		case 3:
+			if (corrAns != 339)
+				explode_bomb();
+			break;
+
+		case 4:
+			if (corrAns != 119)
+				explode_bomb();
+			break;
+
+		case 5:
+			if (corrAns != 352)
+				explode_bomb();
+			break;
+
+		case 6:
+			if (corrAns != 919)
+				explode_bomb();
+			break;
+
+		case 7:
+			if (corrAns != 412)
+				explode_bomb();
+			break;
+		
+		default:
+			explode_bomb();
+	}
+
+	/** clean-up **/
+	free(cString);
+	cString = NULL;
+	
+	printf("Phase 3 cleared!\n");
+	return;
+}

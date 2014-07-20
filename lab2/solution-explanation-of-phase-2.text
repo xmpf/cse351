@@ -1,0 +1,98 @@
+Dump of assembler code for function phase_2:
+   0x0000000000400e8c <+0>:     mov    %rbx,-0x20(%rsp)  ; *(rsp - 32) = rbx
+   0x0000000000400e91 <+5>:     mov    %rbp,-0x18(%rsp)  ; *(rsp - 24) = rrp
+   0x0000000000400e96 <+10>:    mov    %r12,-0x10(%rsp)  ; *(rsp - 16) = r12
+   0x0000000000400e9b <+15>:    mov    %r13,-0x8(%rsp)   ; *(rsp -  8) = r13
+   0x0000000000400ea0 <+20>:    sub    $0x48,%rsp        ; rsp = rsp - 72
+   0x0000000000400ea4 <+24>:    mov    %rsp,%rsi         ; rsi = rsp
+   0x0000000000400ea7 <+27>:    callq  0x401743 <read_six_numbers>
+   0x0000000000400eac <+32>:    mov    %rsp,%rbp         ; rbp = rsp
+   0x0000000000400eaf <+35>:    lea    0xc(%rsp),%r13    ; r13 = &(*(rsp + 12))
+   0x0000000000400eb4 <+40>:    mov    $0x0,%r12d        ; r12d = 0
+   0x0000000000400eba <+46>:    mov    %rbp,%rbx         ; rbx = rbp
+   0x0000000000400ebd <+49>:    mov    0xc(%rbp),%eax    ; eax = *(rbp + 12)
+   0x0000000000400ec0 <+52>:    cmp    %eax,0x0(%rbp)    ; if (*rbp == eax) goto 0x400eca
+   0x0000000000400ec3 <+55>:    je     0x400eca <phase_2+62>
+   0x0000000000400ec5 <+57>:    callq  0x40163d <explode_bomb>
+   0x0000000000400eca <+62>:    add    (%rbx),%r12d      ; r12d = r12d + (*rbx)
+   0x0000000000400ecd <+65>:    add    $0x4,%rbp         ; rbp = rbp + 4
+   0x0000000000400ed1 <+69>:    cmp    %r13,%rbp         ; if (rbp != r13) goto 0x400eba
+   0x0000000000400ed4 <+72>:    jne    0x400eba <phase_2+46>
+   0x0000000000400ed6 <+74>:    test   %r12d,%r12d       ; if (r12d != 0)  goto 0x400ee0
+   0x0000000000400ed9 <+77>:    jne    0x400ee0 <phase_2+84>
+   0x0000000000400edb <+79>:    callq  0x40163d <explode_bomb>
+   0x0000000000400ee0 <+84>:    mov    0x28(%rsp),%rbx   ; rbx = *(rsp + 40)
+   0x0000000000400ee5 <+89>:    mov    0x30(%rsp),%rbp   ; rbp = *(rsp + 48)
+   0x0000000000400eea <+94>:    mov    0x38(%rsp),%r12   ; r12 = *(rsp + 56)
+   0x0000000000400eef <+99>:    mov    0x40(%rsp),%r13   ; r13 = *(rsp + 64)
+   0x0000000000400ef4 <+104>:   add    $0x48,%rsp        ; rsp = rsp + 72
+   0x0000000000400ef8 <+108>:   retq                     ; return
+End of assembler dump.
+
+---------------------------------------------------------------------------------------------------
+
+Dump of assembler code for function read_six_numbers:
+   0x0000000000401743 <+0>:     sub    $0x18,%rsp        ; rsp = rsp - 24
+   0x0000000000401747 <+4>:     mov    %rsi,%rdx         ; rdx = rsi
+   0x000000000040174a <+7>:     lea    0x4(%rsi),%rcx    ; rcx = *(rsi + 4)
+   0x000000000040174e <+11>:    lea    0x14(%rsi),%rax   ; rax = *(rsi + 20)
+   0x0000000000401752 <+15>:    mov    %rax,0x8(%rsp)    ; *(rsp + 8) = rax
+   0x0000000000401757 <+20>:    lea    0x10(%rsi),%rax   ; rax = &(*(rsi + 16))
+   0x000000000040175b <+24>:    mov    %rax,(%rsp)       ; rsp = rax
+   0x000000000040175f <+28>:    lea    0xc(%rsi),%r9     ; r9 = *(rsi + 12)
+   0x0000000000401763 <+32>:    lea    0x8(%rsi),%r8     ; r8 = *(rsi + 8)
+   0x0000000000401767 <+36>:    mov    $0x401eb2,%esi    ; esi = "%d %d %d %d %d %d"
+   0x000000000040176c <+41>:    mov    $0x0,%eax         ; eax = 0
+   0x0000000000401771 <+46>:    callq  0x400ab0 <__isoc99_sscanf@plt>
+   0x0000000000401776 <+51>:    cmp    $0x5,%eax         ; if (eax > 5) goto 0x401780
+   0x0000000000401779 <+54>:    jg     0x401780 <read_six_numbers+61>
+   0x000000000040177b <+56>:    callq  0x40163d <explode_bomb>
+   0x0000000000401780 <+61>:    add    $0x18,%rsp        ; rsp = rsp + 24
+   0x0000000000401784 <+65>:    retq                     ; return
+End of assembler dump.
+
+#define DEBUG_ON 0
+
+int read_six_numbers(int *numArray[])
+{
+	/*
+		24-bytes in the stack. => 6 x 4-byte integers.
+		We declare an array of 6 integers on the stack.
+	*/
+	char *cstring = NULL;
+	size_t size = 0;
+
+	getline(&cstring, &size, stdin);
+
+	int numArray[6];
+	int readOK;
+	readOK = sscanf(cstring, "%d %d %d %d %d %d", &numArray[0], &numArray[1], &numArray[2], &numArray[3], &numArray[4], &numArray[5]);
+
+#ifdef DEBUG_ON
+	printf("Successfully read %d integers from standard input", readOK);
+#endif
+	
+	free (cstring);
+	cstring = NULL;
+
+	if (readOK > 5) {
+		return;	
+	}
+	else {
+		explode_bomb();
+	}
+
+}
+
+int phase_2()
+{
+   int numArray[6];
+   read_six_numbers(&numArray);
+
+   int i;
+   for(i = 0; i < 3; i++) {
+      if (numArray[i] != numArray[i + 3])
+         explode_bomb();
+   }
+   return;
+}

@@ -1,0 +1,98 @@
+Dump of assembler code for function phase_5:
+   0x0000000000401002 <+0>:     sub    $0x18,%rsp				; rsp = rsp - 24
+   0x0000000000401006 <+4>:     lea    0x8(%rsp),%rcx			; rcx = *(rsp + 8)   (function argument)
+   0x000000000040100b <+9>:     lea    0xc(%rsp),%rdx			; rdx = *(rsp + 12)  (function argument)
+   0x0000000000401010 <+14>:    mov    $0x401ebe,%esi			; esi = "%d %d"
+   0x0000000000401015 <+19>:    mov    $0x0,%eax				; eax = 0
+   0x000000000040101a <+24>:    callq  0x400ab0 <__isoc99_sscanf@plt>
+   0x000000000040101f <+29>:    cmp    $0x1,%eax				; if (eax > 1) goto 0x401029
+   0x0000000000401022 <+32>:    jg     0x401029 <phase_5+39>
+   0x0000000000401024 <+34>:    callq  0x40163d <explode_bomb>	; if (eax <= 1) explode_bomb()
+   0x0000000000401029 <+39>:    mov    0xc(%rsp),%eax			; eax = *(rsp + 12)	::function parameter
+   0x000000000040102d <+43>:    and    $0xf,%eax				; eax = eax & 0xf (last 2 bits)
+   0x0000000000401030 <+46>:    mov    %eax,0xc(%rsp)			; *(rsp + 12) = eax
+   0x0000000000401034 <+50>:    cmp    $0xf,%eax				; if (eax == 0xf) explode_bomb()
+   0x0000000000401037 <+53>:    je     0x401065 <phase_5+99>
+   0x0000000000401039 <+55>:    mov    $0x0,%ecx				; ecx = 0
+   0x000000000040103e <+60>:    mov    $0x0,%edx				; edx = 0
+	   0x0000000000401043 <+65>:    add    $0x1,%edx				; edx = edx + 0x1
+	   0x0000000000401046 <+68>:    cltq   							; sign extend eax to quadword (rax)
+	   0x0000000000401048 <+70>:    mov    0x401ba0(,%rax,4),%eax	; eax = *(rax * 4 + 0x401ba0)
+	   0x000000000040104f <+77>:    add    %eax,%ecx				; ecx = ecx + eax
+	   0x0000000000401051 <+79>:    cmp    $0xf,%eax				; if (eax != 0xf) goto 0x401043 (inc edx)
+	   0x0000000000401054 <+82>:    jne    0x401043 <phase_5+65>
+   0x0000000000401056 <+84>:    mov    %eax,0xc(%rsp)			; *(rsp + 12) = eax
+   0x000000000040105a <+88>:    cmp    $0xc,%edx				; if (edx != 12) explode_bomb()
+   0x000000000040105d <+91>:    jne    0x401065 <phase_5+99>
+   0x000000000040105f <+93>:    cmp    0x8(%rsp),%ecx			; if (ecx == *(rsp + 8)) goto 0x40106a
+   0x0000000000401063 <+97>:    je     0x40106a <phase_5+104>
+   0x0000000000401065 <+99>:    callq  0x40163d <explode_bomb>	; explode_bomb()
+   0x000000000040106a <+104>:   add    $0x18,%rsp				; rsp = rsp + 24
+   0x000000000040106e <+108>:   retq   							; return
+End of assembler dump.
+
+--------------------------------------------------------------------------------
+
+int phase_5()
+{
+	int p; /** function parameter **/
+	int q; /** function parameter **/
+	
+	int numArray[15] = {10, 2, 14, 7, 8, 12, 15, 11, 0, 4, 1, 13, 3, 9, 6};
+
+	int edx = 0;
+	int eax = 0;
+	int ecx = 0;
+
+	int readOK; /** number of elements successfully read **/
+
+	char *cString = NULL;
+	size_t len = 0;
+	/** read from standard input **/
+	getline(&cString, &len, stdin);
+
+	readOK = sscanf(cString, "%d %d", &p, &q);
+	if (readOK > 1) {
+		
+		q = (q & 0xf);
+		if (q == 0xf)
+			explode_bomb();
+
+		eax = q;
+		do {
+			edx = (edx + 0x1);
+			eax = numArray[eax]
+			ecx = (ecx + eax);
+		}while (eax != 0xf)
+
+	}
+	else {
+		explode_bomb();
+	}
+
+	q = eax;
+	if (edx != 12)
+		explode_bomb();
+
+	if (ecx == p)
+		goto returnOK;
+	else
+		goto returnBAD;
+
+returnOK:
+	/** clean-up **/
+	free(cString);
+	cString = NULL;
+	return;
+
+returnBAD:
+	free(cString);
+	cString = NULL;
+	return 1;
+}
+
+--------------------------------------------------------
+
+1) We have to find that number 'q' which will cause 12 (twelve) iterations.
+2) 'q' must be less than 15 (fifteen)
+3) The second parameter 'p' at the end of the loop must be equal with %ecx register.
